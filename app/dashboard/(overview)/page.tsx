@@ -9,6 +9,8 @@ import {
   RevenueChartSkeleton,
 } from '@/app/ui/skeletons';
 
+('Mutated data using froms and react server actions (create, update and delete) also dynamically routing');
+
 async function Page() {
   return (
     <main>
