@@ -48,9 +48,11 @@ export default function RegisterForm() {
             <div id="email-error" aria-live="polite" aria-atomic="true">
               {state?.errors?.email &&
                 state?.errors?.email.map((error: string) => {
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>;
+                  return (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  );
                 })}
             </div>
           </div>
@@ -78,9 +80,11 @@ export default function RegisterForm() {
             <div id="name-error" aria-live="polite" aria-atomic="true">
               {state?.errors?.name &&
                 state?.errors?.name.map((error: string) => {
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>;
+                  return (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  );
                 })}
             </div>
           </div>
@@ -109,9 +113,11 @@ export default function RegisterForm() {
             <div id="password-error" aria-live="polite" aria-atomic="true">
               {state?.errors?.password &&
                 state?.errors?.password.map((error: string) => {
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>;
+                  return (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  );
                 })}
             </div>
           </div>
@@ -145,9 +151,11 @@ export default function RegisterForm() {
             >
               {state?.errors?.confirmPassword &&
                 state?.errors?.confirmPassword.map((error: string) => {
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>;
+                  return (
+                    <p className="mt-2 text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  );
                 })}
             </div>
           </div>
