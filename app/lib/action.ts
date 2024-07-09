@@ -7,6 +7,8 @@ import { z } from 'zod';
 
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import bcrypt from 'bcrypt';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 
 export async function authenticate(
   prevState: string | undefined,
@@ -24,6 +26,100 @@ export async function authenticate(
       }
     }
     throw error;
+  }
+}
+
+const RegisterSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+});
+
+const Register = RegisterSchema.omit({ confirmPassword: true });
+const RegisterType = Register['_output'];
+
+const FullRegisterSchema = RegisterSchema.refine(
+  (data) => data.confirmPassword === data.password,
+  {
+    message: 'Password does not match',
+    path: ['confirmPassword'],
+  },
+);
+
+export type RegisterState = {
+  errors?: {
+    email?: string[];
+    name?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+  };
+  message?: string | null;
+};
+
+async function createUser(formData: typeof RegisterType) {
+  const result = await sql`
+      INSERT INTO users (email, password, name)
+      VALUES (${formData.email}, ${formData.password},  ${formData.name})
+    `;
+
+  return result.rowCount;
+}
+
+export async function register(
+  prevState: RegisterState | undefined,
+  formData: FormData,
+) {
+  try {
+    const validatedFields = FullRegisterSchema.safeParse({
+      email: formData.get('email'),
+      name: formData.get('name'),
+      password: formData.get('password'),
+      confirmPassword: formData.get('confirm-password'),
+    });
+
+    if (!validatedFields.success) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: 'Missing Fields. Failed to Create User, please try again.',
+      };
+    }
+
+    const { email, password, name } = validatedFields.data;
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // create user
+    const rowCount = await createUser({
+      email,
+      password: hashedPassword,
+      name,
+    });
+
+    if (rowCount !== 1) {
+      return {
+        message: 'Database error. Failed to create user.',
+      };
+    }
+
+    // sign in if user has been created
+    await signIn('credentials', { email, password });
+  } catch (error: string | any) {
+    // handle user exists
+    if (error.code == '23505') {
+      return {
+        message: 'Email already exists. Please sign in.',
+      };
+    }
+
+    if (isRedirectError(error)) {
+      redirect('/dashboard');
+    }
+
+    return {
+      message: 'Something went wrong, please try again.',
+    };
   }
 }
 

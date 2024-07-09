@@ -11,6 +11,7 @@ import { Button } from './button';
 
 import { useFormState, useFormStatus } from 'react-dom';
 import { authenticate } from '../lib/action';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -76,6 +77,14 @@ export default function LoginForm() {
             </>
           )}
         </div>
+      </div>
+      <div className="text-center text-sm text-gray-500">
+        <p>
+          Don&apos;t have an account? {''}
+          <Link href="/register" className="text-blue-500">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </form>
   );
