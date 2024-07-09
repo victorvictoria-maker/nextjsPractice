@@ -1,5 +1,11 @@
 import SideNav from '../ui/dashboard/sidenav';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+};
+
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
